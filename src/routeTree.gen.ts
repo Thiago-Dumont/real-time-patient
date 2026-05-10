@@ -9,10 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KanbanRouteImport } from './routes/kanban'
+import { Route as ContatosRouteImport } from './routes/contatos'
+import { Route as AnaliticosRouteImport } from './routes/analiticos'
+import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as IndexRouteImport } from './routes/index'
 
+const NotificacoesRoute = NotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -23,6 +32,21 @@ const KanbanRoute = KanbanRouteImport.update({
   path: '/kanban',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContatosRoute = ContatosRouteImport.update({
+  id: '/contatos',
+  path: '/contatos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnaliticosRoute = AnaliticosRouteImport.update({
+  id: '/analiticos',
+  path: '/analiticos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +55,81 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/analiticos': typeof AnaliticosRoute
+  '/contatos': typeof ContatosRoute
   '/kanban': typeof KanbanRoute
   '/login': typeof LoginRoute
+  '/notificacoes': typeof NotificacoesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/analiticos': typeof AnaliticosRoute
+  '/contatos': typeof ContatosRoute
   '/kanban': typeof KanbanRoute
   '/login': typeof LoginRoute
+  '/notificacoes': typeof NotificacoesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/analiticos': typeof AnaliticosRoute
+  '/contatos': typeof ContatosRoute
   '/kanban': typeof KanbanRoute
   '/login': typeof LoginRoute
+  '/notificacoes': typeof NotificacoesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/kanban' | '/login'
+  fullPaths:
+    | '/'
+    | '/agenda'
+    | '/analiticos'
+    | '/contatos'
+    | '/kanban'
+    | '/login'
+    | '/notificacoes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/kanban' | '/login'
-  id: '__root__' | '/' | '/kanban' | '/login'
+  to:
+    | '/'
+    | '/agenda'
+    | '/analiticos'
+    | '/contatos'
+    | '/kanban'
+    | '/login'
+    | '/notificacoes'
+  id:
+    | '__root__'
+    | '/'
+    | '/agenda'
+    | '/analiticos'
+    | '/contatos'
+    | '/kanban'
+    | '/login'
+    | '/notificacoes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
+  AnaliticosRoute: typeof AnaliticosRoute
+  ContatosRoute: typeof ContatosRoute
   KanbanRoute: typeof KanbanRoute
   LoginRoute: typeof LoginRoute
+  NotificacoesRoute: typeof NotificacoesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/notificacoes': {
+      id: '/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof NotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -75,6 +144,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KanbanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contatos': {
+      id: '/contatos'
+      path: '/contatos'
+      fullPath: '/contatos'
+      preLoaderRoute: typeof ContatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analiticos': {
+      id: '/analiticos'
+      path: '/analiticos'
+      fullPath: '/analiticos'
+      preLoaderRoute: typeof AnaliticosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,8 +177,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
+  AnaliticosRoute: AnaliticosRoute,
+  ContatosRoute: ContatosRoute,
   KanbanRoute: KanbanRoute,
   LoginRoute: LoginRoute,
+  NotificacoesRoute: NotificacoesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
