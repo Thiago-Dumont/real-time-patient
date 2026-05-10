@@ -15,14 +15,22 @@ import {
   Activity,
 } from "lucide-react";
 
-const NAV = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+  badge?: boolean;
+};
+
+const NAV: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/kanban", label: "Pipeline", icon: KanbanSquare },
   { to: "/contatos", label: "Contatos", icon: Users },
   { to: "/analiticos", label: "Analíticos", icon: BarChart3 },
   { to: "/notificacoes", label: "Notificações", icon: Bell, badge: true },
   { to: "/agenda", label: "Agenda via n8n", icon: CalendarClock },
-] as const;
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { signOut, session } = useAuth();
@@ -77,7 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as string}
                 onClick={() => setOpen(false)}
                 className={`flex items-center justify-between gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
                   active
