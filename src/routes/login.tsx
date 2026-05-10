@@ -10,42 +10,50 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { signIn, session, loading } = useAuth();
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [mode, setMode] = useState<"login" | "signup">("login");
 
-  if (!loading && session) return <Navigate to="/" />;
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">
+            Verificando acesso...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (session) {
+    return <Navigate to="/" />;
+  }
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     setBusy(true);
     setError(null);
-    setInfo(null);
-    if (mode === "signup") {
-      const { supabase } = await import("@/lib/supabase");
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      setBusy(false);
-      if (error) return setError(error.message);
-      if (data.session) navigate({ to: "/" });
-      else setInfo("Conta criada. Se o e-mail exigir confirmação, verifique sua caixa de entrada. Caso contrário, entre agora.");
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    const { error } = await signIn(cleanEmail, password);
+
+    setBusy(false);
+
+    if (error) {
+      setError(
+        "Não foi possível entrar. Verifique se o e-mail e a senha estão corretos e se o usuário foi criado no Supabase Authentication."
+      );
       return;
     }
-    const { error } = await signIn(email, password);
-    setBusy(false);
-    if (error) setError(error);
-    else navigate({ to: "/" });
-  };
 
-  const fillTest = () => {
-    setEmail("teste@clinicasaudetotal.com");
-    setPassword("Teste@123456");
+    navigate({ to: "/" });
   };
 
   return (
@@ -56,18 +64,29 @@ function LoginPage() {
             <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold">
               <Activity size={20} />
             </div>
-            <span className="font-semibold text-lg">Saúde Total</span>
+            <span className="font-semibold text-lg">
+              Clínica Saúde Total
+            </span>
           </div>
+
           <h1 className="text-2xl font-semibold">
-            {mode === "login" ? "Entrar no CRM" : "Criar conta"}
+            Entrar no CRM
           </h1>
+
           <p className="text-sm text-muted-foreground mt-1">
-            Acesse sua conta para continuar
+            Use o e-mail e senha criados no Supabase.
           </p>
         </div>
-        <form onSubmit={onSubmit} className="space-y-4 bg-card border border-border rounded-lg p-6">
+
+        <form
+          onSubmit={onSubmit}
+          className="space-y-4 bg-card border border-border rounded-lg p-6"
+        >
           <div>
-            <label className="text-sm font-medium block mb-1.5">E-mail</label>
+            <label className="text-sm font-medium block mb-1.5">
+              E-mail
+            </label>
+
             <input
               type="email"
               required
@@ -75,56 +94,43 @@ function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 bg-input border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="seu@email.com"
+              autoComplete="email"
             />
           </div>
+
           <div>
-            <label className="text-sm font-medium block mb-1.5">Senha</label>
+            <label className="text-sm font-medium block mb-1.5">
+              Senha
+            </label>
+
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 bg-input border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="••••••••"
+              placeholder="Digite sua senha"
+              autoComplete="current-password"
             />
           </div>
+
           {error && (
             <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-2.5">
               {error}
             </div>
           )}
-          {info && (
-            <div className="text-sm text-primary bg-primary/10 border border-primary/20 rounded-md p-2.5">
-              {info}
-            </div>
-          )}
+
           <button
             type="submit"
             disabled={busy}
             className="w-full py-2.5 rounded-md bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 disabled:opacity-50 transition"
           >
-            {busy ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
+            {busy ? "Entrando..." : "Entrar"}
           </button>
-          <div className="flex items-center justify-between text-xs pt-2">
-            <button
-              type="button"
-              onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(null); setInfo(null); }}
-              className="text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-            >
-              {mode === "login" ? "Criar nova conta" : "Já tenho conta"}
-            </button>
-            <button
-              type="button"
-              onClick={fillTest}
-              className="text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-            >
-              Preencher dados de teste
-            </button>
-          </div>
-          <div className="text-[11px] text-muted-foreground text-center pt-1 leading-relaxed">
-            Conta de teste sugerida:<br />
-            <span className="text-foreground">teste@clinicasaudetotal.com</span> · senha <span className="text-foreground">Teste@123456</span>
-          </div>
+
+          <p className="text-[11px] text-muted-foreground text-center pt-1 leading-relaxed">
+            O acesso é restrito. Usuários devem ser criados manualmente no Supabase Authentication.
+          </p>
         </form>
       </div>
     </div>
